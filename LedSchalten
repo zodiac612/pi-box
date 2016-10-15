@@ -1,0 +1,71 @@
+#!/bin/sh
+#Pin8 GPIO14 auf Ausgang setzen
+sudo gpio mode 23 out
+sudo gpio mode 24 out
+sudo gpio mode 25 out
+
+#Zustand des Ausgangs in Variable lesen
+ZustandA="$( sudo gpio read 23 )"
+ZustandB="$( sudo gpio read 24 )"
+ZustandC="$( sudo gpio read 25 )"
+
+case "$1" in 
+    alle)
+	if [ "$ZustandA" = "0" ]; then
+		sudo gpio write 23 1
+		echo "LED 1 an"
+	fi
+	if [ "$ZustandB" = "0" ]; then
+		sudo gpio write 24 1
+		echo "LED 2 an"
+	fi
+	if [ "$ZustandC" = "0" ]; then
+		sudo gpio write 25 1
+		echo "LED 3 an"
+	fi
+	;;
+    led1)
+	if [ "$ZustandA" = "0" ]; then
+		sudo gpio write 27 1
+		echo "LED 1 an"
+	fi
+        ;;
+    led2)
+	if [ "$ZustandB" = "0" ]; then
+		sudo gpio write 28 1
+		echo "LED 2 an"
+	fi
+        ;;
+    led3)
+	if [ "$ZustandC" = "0" ]; then
+		sudo gpio write 29 1
+		echo "LED 3 an"
+	fi
+        ;;
+    aus)
+	if [ "$ZustandA" = "1" ]; then
+		sudo gpio write 23 0
+		echo "LED 1 aus"
+	fi
+	if [ "$ZustandB" = "1" ]; then
+		sudo gpio write 24 0
+		echo "LED 2 aus"
+	fi
+	if [ "$ZustandC" = "1" ]; then
+		sudo gpio write 25 0
+		echo "LED 3 aus"
+	fi
+	;;
+    status)
+	echo "Led Status"
+	echo "Led1: " $ZustandA
+	echo "Led2: " $ZustandB
+	echo "Led3: " $ZustandC
+        ;;
+    *)
+        echo "Usage: LedSchalten alle|led1|led2|led3|aus|status"
+        exit 1
+        ;;
+esac
+
+exit 0

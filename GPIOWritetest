@@ -1,0 +1,22 @@
+#!/bin/sh
+#Pin8 GPIO14 auf Ausgang setzen
+sudo gpio mode $1 out
+
+#Zustand des Ausgangs in Variable lesen
+ZustandA="$( sudo gpio read $1 )"
+	if [ "$ZustandA" = "0" ]; then
+		sudo gpio write $1 1
+		echo "LED $1 an"
+		sleep 2
+		sudo gpio write $1 0
+		echo "LED $1 aus"
+	else
+		echo "LED $1 schon an"
+		sleep 2
+		sudo gpio write $1 0
+		echo "LED $1 aus"
+		
+	fi
+
+
+exit 0

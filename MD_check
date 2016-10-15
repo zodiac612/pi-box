@@ -1,0 +1,69 @@
+#!/bin/sh
+#Bewegungsmelder
+GPIOMD=2
+sudo gpio mode $GPIOMD in
+#Taster
+GPIOTbl=27
+GPIOTro=28
+GPIOTgr=29
+sudo gpio mode $GPIOTbl in # blau
+sudo gpio mode $GPIOTro in # rot
+sudo gpio mode $GPIOTgr in # gruen
+#LED
+GPIOLro=23
+GPIOLor=24
+GPIOLgr=25
+sudo gpio mode $GPIOLro out # rot
+sudo gpio mode $GPIOLor out # orange
+sudo gpio mode $GPIOLgr out # gruen
+
+ZustandBL=1
+
+SwitchLED(){
+	GPIOL=$1
+	ZustandL="$( sudo gpio read $GPIOL )"
+	if [ "$ZustandL" = "0" ]; then
+		sudo gpio write $GPIOL 1
+		echo "LED $GPIOL an"
+	else
+		sudo gpio write $GPIOL 0
+		echo "LED $GPIOL aus"
+	fi	
+}
+
+while true; do
+clear
+    #Zustand des Ausgangs in Variable lesen
+    ZustandTbl="$( sudo gpio read $GPIOTbl )" 
+    ZustandTro="$( sudo gpio read $GPIOTro )"
+    ZustandTgr="$( sudo gpio read $GPIOTgr )" 
+    ZustandMD="$( sudo gpio read $GPIOMD )"
+    echo "Tbl:"$ZustandTbl
+    echo "Tro:"$ZustandTro
+    echo "Tgr:"$ZustandTgr
+    echo "MD:"$ZustandMD
+    echo "BL:"$ZustandBL
+#    sleep 0.1
+	if [ "$ZustandTbl" = "0" ]; then
+		SwitchLED $GPIOLor
+	fi
+	if [ "$ZustandTro" = "0" ]; then
+		# Backlight aus + LED Rot an
+		if [ "$ZustandBL" = "1" ]; then
+			sudo gpio write $GPIOLro 1
+			script="$( echo 1 > /sys/class/backlight/rpi_backlight/bl_power )"
+			ZustandBL=0
+		else
+			sudo gpio write $GPIOLro 0
+			script="$( echo 0 > /sys/class/backlight/rpi_backlight/bl_power )"
+			ZustandBL=1
+		fi
+
+	fi
+	if [ "$ZustandTgr" = "0" ]; then
+		SwitchLED $GPIOLgr
+	fi
+	sleep 0.1
+done
+
+exit 0
