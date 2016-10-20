@@ -28,7 +28,7 @@ BMelder = gpio.GPIOin(27)
 sleep(0.1)
 
 INTERVAL_SENSORS = 60
-INTERVAL_MD = 60
+INTERVAL_MD = 10
 refreshTime_sensors = time.time() + INTERVAL_SENSORS
 refreshTime_MD = time.time() + INTERVAL_MD
 boolTasterG=False
@@ -68,6 +68,7 @@ def fadebacklight(trigger = 'on'):
             os.system("sudo /home/pi/dev/pi-box/fadeBacklight.sh " + str(x))
             x = x - 25
     elif trigger=='off':
+        os.system("xte -x :0 \"key F5\"")
         x = 0       
 #        while x < 256:
         while x < 128:
@@ -75,7 +76,11 @@ def fadebacklight(trigger = 'on'):
             x = x + 10
         
 fadebacklight('off')
-os.system("epiphany-browser --display=:0 http://raspberrypi/index_kiosk.php & ")
+os.system("sudo service pilight stop")
+##os.system("sudo xset -dpms") # disable energy saver
+#os.system("xset s off") # disable screen saver
+#os.system("sudo xset s noblank") # don't blank the videodevice
+os.system("epiphany-browser --display=:0 http://raspberrypi3/slideshow.php & ")
 sleep(20)
 os.system("xte -x :0 \"key F11\"")
 #LedG.on()
